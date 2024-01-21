@@ -18,6 +18,10 @@ from .isapi import ISAPI
 SCAN_INTERVAL_EVENTS = timedelta(seconds=120)
 SCAN_INTERVAL_HOLIDAYS = timedelta(minutes=60)
 
+# possibly convert to parameters
+EVENTS_COORDINATION_TIMEOUT = 120
+SECONDARY_COORDINATION_TIMEOUT = 100
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -37,7 +41,7 @@ class EventsCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Update data via ISAPI"""
-        async with async_timeout.timeout(30):
+        async with async_timeout.timeout(EVENTS_COORDINATION_TIMEOUT):
             data = {}
 
             # Get camera event status
@@ -92,7 +96,7 @@ class SecondaryCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Update data via ISAPI"""
-        async with async_timeout.timeout(20):
+        async with async_timeout.timeout(SECONDARY_COORDINATION_TIMEOUT):
             data = {}
             try:
                 if self.isapi.device_info.support_holiday_mode:
